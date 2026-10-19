@@ -7,10 +7,6 @@ import json,sys,time
 #mail:  Mail.Read、Mail.ReadWrite、MailboxSettings.Read、MailboxSettings.ReadWrite
 #注册后一定要再点代表xxx授予管理员同意,否则outlook api无法调用
 
-import os
-
-id = os.environ.get('CONFIG_ID')
-secret = os.environ.get('CONFIG_KEY')
 
 
 
@@ -20,43 +16,25 @@ path=sys.path[0]+r'/Secret.txt'
 num1 = 0
 
 def gettoken(refresh_token):
-    headers = {
-        'Content-Type': 'application/x-www-form-urlencoded'
-    }
-
-    data = {
-        'grant_type': 'refresh_token',
-        'refresh_token': refresh_token,
-        'client_id': id,
-        'client_secret': secret,
-        'redirect_uri': 'http://localhost:53682/'
-    }
-
-    html = req.post(
-        'https://login.microsoftonline.com/common/oauth2/v2.0/token',
-        data=data,
-        headers=headers
-    )
-
-    print("========== TOKEN DEBUG ==========")
-    print("Status:", html.status_code)
-    print("Response:", html.text)
-    print("=================================")
-
+    headers={'Content-Type':'application/x-www-form-urlencoded'
+            }
+    data={'grant_type': 'refresh_token',
+          'refresh_token': refresh_token,
+          'client_id':id,
+          'client_secret':secret,
+          'redirect_uri':'http://localhost:53682/'
+         }
+    html = req.post('https://login.microsoftonline.com/common/oauth2/v2.0/token',data=data,headers=headers)
     jsontxt = json.loads(html.text)
-
-    if 'refresh_token' not in jsontxt:
-        raise Exception(str(jsontxt))
-
+print("TOKEN RESPONSE:")
+print(html.text)
+print("END TOKEN RESPONSE")
     refresh_token = jsontxt['refresh_token']
     access_token = jsontxt['access_token']
-
     with open(path, 'w+') as f:
         f.write(refresh_token)
-
     return access_token
-    
-    def main():
+def main():
     fo = open(path, "r+")
     refresh_token = fo.read()
     fo.close()
@@ -77,7 +55,7 @@ def gettoken(refresh_token):
         if req.get(r'https://graph.microsoft.com/v1.0/drive/root',headers=headers).status_code == 200:
             num1+=1
             print('3调用成功'+str(num1)+'次')
-        if req.get(r'https://graph.microsoft.com/v1.0/users',headers=headers).status_code == 200:
+        if req.get(r'https://graph.microsoft.com/v1.0/users ',headers=headers).status_code == 200:
             num1+=1
             print('4调用成功'+str(num1)+'次')
         if req.get(r'https://graph.microsoft.com/v1.0/me/messages',headers=headers).status_code == 200:
