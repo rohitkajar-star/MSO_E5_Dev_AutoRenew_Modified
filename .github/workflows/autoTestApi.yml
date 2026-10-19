@@ -1,42 +1,51 @@
 name: Auto Test MS Graph API
 
-on: 
+on:
   release:
     types: [published]
   push:
-    branches: 
+    branches:
       - main
   schedule:
     - cron: '0 0/3 * * *'
   workflow_dispatch:
-   
+
+permissions:
+  contents: write
+
 jobs:
-   Task:
+  Task:
     runs-on: ubuntu-22.04
+
     steps:
     - name: Checkout
-      uses: actions/checkout@main
+      uses: actions/checkout@v4
+
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
-        python-version: 3.8
+        python-version: "3.8"
+
     - name: Install requests
       run: |
         pip install requests
+
     - name: Read config and Test Api
-      env: 
-        CONFIG_ID: \${{ secrets.CONFIG_ID }}
-        CONFIG_KEY: \${{ secrets.CONFIG_KEY }}
-      run: | 
+      env:
+        CONFIG_ID: ${{ secrets.CONFIG_ID }}
+        CONFIG_KEY: ${{ secrets.CONFIG_KEY }}
+      run: |
         echo `date +"%Y-%m-%d %H:%M:%S"` begin > time.log
         python test.py
+
     - name: Commit
       run: |
         git config --global user.email chrisvcg_msdev@outlook.com
         git config --global user.name chrisvcg_msdev
         git add .
         git commit -m "update logs via GitAction" -a || exit 0
+
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:
-        github_token: \${{ secrets.GITHUB_TOKEN }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
