@@ -6,7 +6,6 @@ import sys
 import time
 import os
 
-# GitHub Secrets
 id = os.environ.get("CONFIG_ID")
 secret = os.environ.get("CONFIG_KEY")
 
@@ -21,19 +20,19 @@ def gettoken(refresh_token):
 
     data = {
         "grant_type": "refresh_token",
-        "refresh_token": refresh_token,
+        "refresh_token": refresh_token.strip(),
         "client_id": id,
         "client_secret": secret,
         "redirect_uri": "http://localhost:53682/"
     }
-    
-print("CLIENT ID:", id)
-print("SECRET EXISTS:", secret is not None)
 
-if secret:
-    print("SECRET LENGTH:", len(secret))
-    print("SECRET PREFIX:", secret[:5])
-    
+    print("CLIENT ID:", id)
+    print("SECRET EXISTS:", secret is not None)
+
+    if secret:
+        print("SECRET LENGTH:", len(secret))
+        print("SECRET PREFIX:", secret[:5])
+
     html = req.post(
         "https://login.microsoftonline.com/common/oauth2/v2.0/token",
         data=data,
@@ -62,10 +61,8 @@ if secret:
 def main():
     global num1
 
-    with open(path, "r") as fo:
-        refresh_token = fo.read().strip()
-
-    localtime = time.asctime(time.localtime(time.time()))
+    with open(path, "r") as f:
+        refresh_token = f.read().strip()
 
     access_token = gettoken(refresh_token)
 
@@ -79,30 +76,23 @@ def main():
         "https://graph.microsoft.com/v1.0/me/drive",
         "https://graph.microsoft.com/v1.0/drive/root",
         "https://graph.microsoft.com/v1.0/users",
-        "https://graph.microsoft.com/v1.0/me/messages",
-        "https://graph.microsoft.com/v1.0/me/mailFolders/inbox/messageRules",
-        "https://graph.microsoft.com/v1.0/me/mailFolders/Inbox/messages/delta",
-        "https://graph.microsoft.com/v1.0/me/drive/root/children",
-        "https://api.powerbi.com/v1.0/myorg/apps",
-        "https://graph.microsoft.com/v1.0/me/mailFolders",
-        "https://graph.microsoft.com/v1.0/me/outlook/masterCategories"
+        "https://graph.microsoft.com/v1.0/me/messages"
     ]
 
-    try:
-        for i, url in enumerate(urls, start=1):
+    for url in urls:
+        try:
             r = req.get(url, headers=headers)
-
-            print(f"API {i}: {r.status_code}")
+            print(url, r.status_code)
 
             if r.status_code == 200:
                 num1 += 1
 
-        print("Success count:", num1)
-        print("Run time:", localtime)
+        except Exception as e:
+            print("API ERROR:", str(e))
 
-    except Exception as e:
-        print("ERROR:", str(e))
+    print("Success count:", num1)
+    print("Run time:", time.asctime())
 
 
-for _ in range(5):
+if __name__ == "__main__":
     main()
