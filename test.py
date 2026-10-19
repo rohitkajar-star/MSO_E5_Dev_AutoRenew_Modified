@@ -7,6 +7,10 @@ import json,sys,time
 #mail:  Mail.Read、Mail.ReadWrite、MailboxSettings.Read、MailboxSettings.ReadWrite
 #注册后一定要再点代表xxx授予管理员同意,否则outlook api无法调用
 
+import os
+
+id = os.environ.get('CONFIG_ID')
+secret = os.environ.get('CONFIG_KEY')
 
 
 
