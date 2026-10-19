@@ -21,18 +21,20 @@ def gettoken(refresh_token):
     data = {
         "grant_type": "refresh_token",
         "refresh_token": refresh_token.strip(),
-        "client_id": id,
-        "client_secret": secret,
+        "client_id": id.strip(),
+        "client_secret": secret.strip(),
         "redirect_uri": "http://localhost:53682/"
     }
 
     print("========== DEBUG ==========")
     print("CLIENT ID:", id)
+    print("CLIENT ID LENGTH:", len(id))
     print("SECRET EXISTS:", secret is not None)
 
     if secret:
         print("SECRET LENGTH:", len(secret))
         print("SECRET PREFIX:", secret[:5])
+        print("SECRET LAST 5:", secret[-5:])
 
     print("REFRESH TOKEN LENGTH:", len(refresh_token))
     print("REFRESH TOKEN PREFIX:", refresh_token[:20])
