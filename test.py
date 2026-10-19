@@ -26,12 +26,18 @@ def gettoken(refresh_token):
         "redirect_uri": "http://localhost:53682/"
     }
 
+    print("========== DEBUG ==========")
     print("CLIENT ID:", id)
     print("SECRET EXISTS:", secret is not None)
 
     if secret:
         print("SECRET LENGTH:", len(secret))
         print("SECRET PREFIX:", secret[:5])
+
+    print("REFRESH TOKEN LENGTH:", len(refresh_token))
+    print("REFRESH TOKEN PREFIX:", refresh_token[:20])
+    print("REDIRECT URI:", data["redirect_uri"])
+    print("===========================")
 
     html = req.post(
         "https://login.microsoftonline.com/common/oauth2/v2.0/token",
