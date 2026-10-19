@@ -28,12 +28,21 @@ def gettoken(refresh_token):
           'client_secret':secret,
           'redirect_uri':'http://localhost:53682/'
          }
-    html = req.post('https://login.microsoftonline.com/common/oauth2/v2.0/token',data=data,headers=headers)
-    jsontxt = json.loads(html.text)
-    refresh_token = jsontxt['refresh_token']
-    access_token = jsontxt['access_token']
-    with open(path, 'w+') as f:
-        f.write(refresh_token)
+    html = req.post(
+    'https://login.microsoftonline.com/common/oauth2/v2.0/token',
+    data=data,
+    headers=headers
+)
+
+print("Status:", html.status_code)
+print("Response:", html.text)
+
+jsontxt = json.loads(html.text)
+
+if 'refresh_token' not in jsontxt:
+    raise Exception(jsontxt)
+
+refresh_token = jsontxt['refresh_token']
     return access_token
 def main():
     fo = open(path, "r+")
